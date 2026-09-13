@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>j:com MOBILE料金診断</title>
+<style>
+  body {
+    font-family: sans-serif;
+    background-color: #b2cadc87;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+  }
+
+  input,
+  select,
+  button {
+    font-size: 16px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    color:rgb(2, 23, 12);
+  }
+
+  button {
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  #result {
+    font-size: 18px;
+    font-weight: bold;
+    color:brown;
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-left: 6px solid #0078d4
+  }
+
+  #result:empty{
+    display: none;
+  }
+
+  main{
+    background-color: white;
+    padding: 30px;
+    border-radius: 16px;
+  }
+  
+</style>
+
+</head>
+
+<body>
+  <main>
+    <h1>j:com料金診断</h1>
+    <p>あなたに合った料金プランと削減額を診断します</p>
+
+    <p>毎月使うギガ数を入力してください</p>
+    <input id="giga" type="number" placeholder="例：20">
+
+    <p>現在の月額料金(税抜)を入力してください</p>
+    <input id="currentPrice" type="number" placeholder="例：7000">
+    <p>かけ放題を選んでください</p>
+
+<select id="callOption">
+    <option value="0">かけ放題なし</option>
+    <option value="500">5分かけ放題(+500円) </option>
+    <option value="1500">60分かけ放題(+1,500円)</option>
+</select>    
+
+<button onclick="diagnose()">診断する</button>
+
+<p id="result"></p>
+
+<script>
+    function diagnose(){
+      let gigaInput = document.getElementById("giga").value;
+      let currentPriceInput = document.getElementById("currentPrice").value;
+      let callOption = Number(document.getElementById("callOption").value);
+
+      if(gigaInput === "" ||  currentPriceInput === ""){
+        document.getElementById("result").textContent =
+        "ギガ数と現在の料金を入力してください";
+        return;
+      }
+
+      let giga = Number(gigaInput);
+      let currentPrice=Number(currentPriceInput);
+
+      if (giga < 0 || currentPrice < 0) {
+        document.getElementById("result").textContent=
+        "0以上の数字を入力してください";
+        return;
+      }
+
+
+      let planName = "";
+      let basePrice = 0;
+
+      if (giga<=5){
+        planName="5GBプラン";
+        basePrice=1280;
+      }else if(giga<=10){
+        planName="10GBプラン";
+        basePrice=1780;
+      }else if(giga<=20){
+        planName = "20GBプラン";
+        basePrice = 2280;
+      } else if (giga <= 30) {
+         planName = "30GBプラン";
+         basePrice = 2780;
+      } else if (giga <= 60) {
+         planName = "60GBプラン";
+         basePrice = 3480;
+      } else {
+        document.getElementById("result").textContent =
+         "60GBを超えるため、適したプランがありません";
+        return;
+      }
+
+      let jcomPrice = basePrice + callOption;
+      let monthlySaving = currentPrice - jcomPrice;
+      let yearlySaving = monthlySaving * 12;
+
+      if (monthlySaving > 0){
+       document.getElementById("result").textContent =
+         "おすすめは" + planName +
+         "、J:com料金は月額" + jcomPrice.toLocaleString("ja-JP") + "円(税抜)です。" +
+         "月に" + monthlySaving.toLocaleString("ja-JP") + "円、年間で" +
+         yearlySaving.toLocaleString("ja-JP")+ "円やすくなります。";
+      } else if(monthlySaving ===0) {
+        document.getElementById("result").textContent =
+        "おすすめは" + planName + 
+        "、J:COM料金は月額" + jcomPrice.toLocaleString("ja-JP") +
+        "円(税抜)で、現在と同じ料金です。";
+      }else{
+        let monthlyIncrease = Math.abs(monthlySaving);
+        let yearlyIncrease = monthlyIncrease * 12;
+
+        document.getElementById("result").textContent =
+        "おすすめは" + planName +
+        "、J:COM料金は月額" + jcomPrice.toLocaleString("ja-JP") + "円(税抜)です。" +
+        "現在より月に" + monthlyIncrease.toLocaleString("ja-JP") + "円、年間で" +
+        yearlyIncrease.toLocaleString("ja-Jp") + "円高くなります。";
+      }
+    }
+</script>
+
+   </main>
+</body>
+
+</html>
